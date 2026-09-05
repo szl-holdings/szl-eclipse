@@ -42,7 +42,22 @@ def file_verifier_adapter(verify_paths):
             errors, measured = verify_paths(paths)
             if not isinstance(errors, list) or not isinstance(measured, list):
                 raise ValueError("native verifier returned the wrong contract")
-            return not errors, {"errors": [str(e) for e in errors], "measured_count": len(measured)}
+            expected_paths = [Path(path).resolve() for path in paths]
+            try:
+                actual_paths = [Path(path).resolve() for path in measured]
+                measured_paths_match = (len(actual_paths) == len(expected_paths)
+                                        and len(set(actual_paths)) == len(actual_paths)
+                                        and set(actual_paths) == set(expected_paths))
+            except (TypeError, ValueError, OSError):
+                measured_paths_match = False
+            def logical_error(error):
+                message = str(error)
+                for root in (str(Path(directory)), Path(directory).as_posix()):
+                    message = message.replace(root, "<native-inputs>")
+                return message
+            return not errors, {"errors": [logical_error(error) for error in errors],
+                                "measured_count": len(measured),
+                                "measured_paths_match": measured_paths_match}
     return verify
 
 
@@ -107,7 +122,7 @@ def plane_run(verify_paths, source, plane="retrieval"):
     try:
         valid, detail = verifier(golden)
         report["baseline"] = {"valid": valid, "detail": detail}
-        if not valid or detail["measured_count"] != len(golden):
+        if not valid or detail["measured_count"] != len(golden) or not detail["measured_paths_match"]:
             report.update(state="INVALID-BASELINE", sensitivity=None)
         else:
             for name, mutate in CASES:

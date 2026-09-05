@@ -67,3 +67,25 @@ def test_crashing_verifier_is_error_without_score():
     report = plane_run(crash, {})
     assert report["state"] == "ERROR"
     assert report["sensitivity"] is None
+
+
+def test_positive_control_requires_each_actual_measured_path():
+    for returned in (lambda paths: [paths[0]] * 3,
+                     lambda paths: ["unrelated.json", "stale.json", "other.json"]):
+        report = plane_run(lambda paths: ([], returned(paths)), {})
+        assert report["state"] == "INVALID-BASELINE"
+        assert report["sensitivity"] is None
+        assert report["baseline"]["detail"]["measured_paths_match"] is False
+
+
+def test_native_error_paths_are_logical_and_reports_deterministic():
+    def paths_in_errors(paths):
+        errors, measured = native_reference(paths)
+        if errors and paths:
+            errors = [str(paths[0]) + ": " + error for error in errors]
+        return errors, measured
+    first = plane_run(paths_in_errors, {"name": "path-reference"})
+    second = plane_run(paths_in_errors, {"name": "path-reference"})
+    assert first == second
+    assert first["baseline"]["detail"]["measured_paths_match"] is True
+    assert any("<native-inputs>" in error for row in first["mutations"] for error in row["detail"]["errors"])
