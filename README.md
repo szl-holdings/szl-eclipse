@@ -1,5 +1,22 @@
 # szl-eclipse
 
+## Native plane verifier controls (v0.2)
+
+The default in-memory fixture schema is not the native plane file schema.
+Use `szl_eclipse.planes.plane_run(verify_paths, source, plane="retrieval")`
+for a plane's `verify(paths) -> (errors, measured_paths)` callable. The adapter
+writes the exact native JSON fields to temporary files; it never repairs or
+re-hashes a mutation. The native positive control must be accepted before a
+sensitivity score can be produced. A verifier that rejects everything yields
+`INVALID-BASELINE`, and a crashing verifier yields `ERROR`, not a perfect score.
+
+Reports include the complete golden chain, exact source metadata supplied by
+the caller, each mutation input hash, the native verifier's errors, and a full
+SHA-256 receipt. These are explicitly `LOCAL_FIXTURE_VERIFIER_CONTROLS`, not
+retrieval, model-accuracy, or production-performance measurements. A valid
+hash is integrity evidence, not signer identity or independent attestation.
+The original CLI now prints its complete report and full receipt hash.
+
 Your verifier catches tampering. **Prove it.**
 
 szl-eclipse is mutation-testing for receipt verifiers: it attacks the verifier

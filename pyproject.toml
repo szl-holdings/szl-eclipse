@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "szl-eclipse"
-version = "0.1.0"
+version = "0.2.0"
 description = "Mutation-testing for receipt verifiers - who verifies the verifier"
 readme = "README.md"
 requires-python = ">=3.11"

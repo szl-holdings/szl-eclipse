@@ -16,7 +16,7 @@ from typing import Any, Callable, Dict, List, Tuple
 GENESIS = "0" * 64
 
 def canonical(o: Any) -> str:
-    return json.dumps(o, sort_keys=True, separators=(",", ":"), default=str)
+    return json.dumps(o, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 # ---- reference verifier (the shipped crosscheck logic; inject your own) ----
 
@@ -107,6 +107,14 @@ def eclipse_run(verify_fn: Callable = None, cross_fn: Callable = None, rel_tol: 
     cross_fn = cross_fn or crosscheck
     golden = golden_chain()
     reference = golden_chain()
+    baseline_ok, baseline_detail = verify_fn(copy.deepcopy(golden))
+    baseline_cross = cross_fn(copy.deepcopy(reference), copy.deepcopy(golden), rel_tol)
+    if not baseline_ok or baseline_cross.get("verdict") != "CONSISTENT":
+        report = {"state": "INVALID-BASELINE", "sensitivity": None,
+                  "reason": "verifier/comparator must accept the unmodified positive control",
+                  "baseline_detail": str(baseline_detail), "baseline_crosscheck": baseline_cross}
+        report["receipt"] = hashlib.sha256(canonical(report).encode()).hexdigest()
+        return report
     rows, blind_spots = [], []
     for name, fn, expectation in MUTATIONS:
         mutated = fn(copy.deepcopy(golden))
@@ -120,19 +128,21 @@ def eclipse_run(verify_fn: Callable = None, cross_fn: Callable = None, rel_tol: 
             rows.append({"mutation": name, "chain_valid": ok, "crosscheck": verdict,
                          "expectation": expectation, "caught": caught})
         else:
+            caught = (not ok) or verdict in ("INVALID", "INCOMPARABLE", "DIVERGENT")
+            if not caught:
+                blind_spots.append(name)
             rows.append({"mutation": name, "chain_valid": ok, "crosscheck": verdict,
-                         "expectation": expectation, "caught": True,
+                         "expectation": expectation, "caught": caught,
                          "note": "drift without rehash breaks the chain; ALLOW applies only to honestly re-hashed chains"})
     caught_n = sum(1 for r in rows if r["caught"])
     report = {"state": "VERIFIED-SENSITIVE" if not blind_spots else "BLIND-SPOT",
               "sensitivity": f"{caught_n}/{len(rows)}", "blind_spots": blind_spots,
               "mutations": rows, "rel_tol": rel_tol}
-    payload = {"mutations": [r["mutation"] for r in rows], "blind_spots": blind_spots, "tol": rel_tol}
-    report["receipt"] = hashlib.sha256(canonical(payload).encode()).hexdigest()
     report["label"] = "mutation harness for receipt verifiers - who verifies the verifier"
+    report["baseline"] = {"chain_valid": baseline_ok, "crosscheck": baseline_cross}
+    report["receipt"] = hashlib.sha256(canonical(report).encode()).hexdigest()
     return report
 
 if __name__ == "__main__":
     rep = eclipse_run()
-    print(json.dumps({"state": rep["state"], "sensitivity": rep["sensitivity"],
-                      "blind_spots": rep["blind_spots"], "receipt": rep["receipt"][:16]}, indent=2))
+    print(json.dumps(rep, indent=2))
