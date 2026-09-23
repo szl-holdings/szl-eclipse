@@ -55,9 +55,10 @@ def file_verifier_adapter(verify_paths):
                 for root in (str(Path(directory)), Path(directory).as_posix()):
                     message = message.replace(root, "<native-inputs>")
                 return message
-            return not errors, {"errors": [logical_error(error) for error in errors],
-                                "measured_count": len(measured),
-                                "measured_paths_match": measured_paths_match}
+            accepted = not errors and measured_paths_match
+            return accepted, {"errors": [logical_error(error) for error in errors],
+                              "measured_count": len(measured),
+                              "measured_paths_match": measured_paths_match}
     return verify
 
 
