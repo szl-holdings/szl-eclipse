@@ -2,7 +2,12 @@ import hashlib
 import json
 
 from szl_eclipse.eclipse import canonical, eclipse_run
-from szl_eclipse.planes import file_verifier_adapter, plane_digest, plane_run
+from szl_eclipse.planes import (
+    file_verifier_adapter,
+    plane_digest,
+    plane_golden_chain,
+    plane_run,
+)
 
 
 def native_reference(paths):
@@ -52,6 +57,18 @@ def test_adapter_preserves_malformed_native_fields():
         return [], []
     file_verifier_adapter(inspect)([{"hash": "bad", "extra": True}])
     assert seen == [{"hash": "bad", "extra": True}]
+
+
+def test_adapter_requires_exact_measured_path_set_for_acceptance():
+    chain = plane_golden_chain()
+
+    def silently_drop_last(paths):
+        return [], paths[:-1]
+
+    accepted, detail = file_verifier_adapter(silently_drop_last)(chain)
+    assert accepted is False
+    assert detail["measured_count"] == len(chain) - 1
+    assert detail["measured_paths_match"] is False
 
 
 def test_report_hash_binds_source_and_every_row():
