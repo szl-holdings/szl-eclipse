@@ -1,5 +1,7 @@
 # szl-eclipse
 
+[![PyPI](https://img.shields.io/pypi/v/szl-eclipse)](https://pypi.org/project/szl-eclipse/) [![Python](https://img.shields.io/pypi/pyversions/szl-eclipse)](https://pypi.org/project/szl-eclipse/)
+
 ## Native plane verifier controls (v0.2)
 
 The default in-memory fixture schema is not the native plane file schema.
