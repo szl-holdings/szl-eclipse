@@ -1,6 +1,6 @@
 # szl-eclipse
 
-[![PyPI](https://img.shields.io/pypi/v/szl-eclipse)](https://pypi.org/project/szl-eclipse/) [![Python](https://img.shields.io/pypi/pyversions/szl-eclipse)](https://pypi.org/project/szl-eclipse/)
+[![PyPI](https://img.shields.io/pypi/v/szl-eclipse)](https://pypi.org/project/szl-eclipse/) [![Python](https://img.shields.io/pypi/pyversions/szl-eclipse)](https://pypi.org/project/szl-eclipse/) [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/szl-holdings/szl-eclipse/badge)](https://scorecard.dev/viewer/?uri=github.com/szl-holdings/szl-eclipse)
 
 ## Native plane verifier controls (v0.2)
 
