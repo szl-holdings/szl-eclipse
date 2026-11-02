@@ -64,8 +64,15 @@ Point it at any verifier — yours, ours, the FastAPI planes':
 from szl_eclipse import eclipse_run
 
 rep = eclipse_run(verify_fn=my_verify, cross_fn=my_crosscheck)
-print(rep["state"], rep["sensitivity"], rep["blind_spots"])
+print(rep["state"], rep["sensitivity"], rep.get("blind_spots"))
 ```
+
+The in-memory verifier must return `(bool, detail)` and the comparator must
+return a JSON object with a `CONSISTENT`, `DIVERGENT`, `INVALID`, or
+`INCOMPARABLE` verdict. Exceptions or malformed callback results produce an
+`ERROR` report with no sensitivity score; a falsey error value is not a
+successful tamper detection. Error reports include a phase and exception type
+without retaining callback exception messages.
 
 ## Doctrine
 
