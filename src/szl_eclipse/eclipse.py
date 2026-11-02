@@ -10,7 +10,7 @@ chain (that is the receipt design working). ALLOW-within-tolerance only
 applies to honestly re-hashed chains - documented per-row, not hidden.
 """
 from __future__ import annotations
-import copy, hashlib, json
+import copy, hashlib, json, math
 from typing import Any, Callable, Dict, List, Tuple
 
 GENESIS = "0" * 64
@@ -21,19 +21,40 @@ def canonical(o: Any) -> str:
 # ---- reference verifier (the shipped crosscheck logic; inject your own) ----
 
 def verify_chain(receipts: List[Dict[str, Any]]) -> Tuple[bool, str]:
+    if not isinstance(receipts, (list, tuple)):
+        return False, "chain must be a list or tuple"
     if not receipts:
         return False, "empty chain"
     prev = GENESIS
     for i, r in enumerate(receipts):
+        if not isinstance(r, dict):
+            return False, f"receipt {i} must be an object"
         if r.get("prev_hash") != prev:
             return False, f"link broken at receipt {i}"
         payload = {k: v for k, v in r.items() if k not in ("prev_hash", "chain_hash")}
-        if r.get("chain_hash") != hashlib.sha256((prev + canonical(payload)).encode()).hexdigest():
+        try:
+            digest = hashlib.sha256((prev + canonical(payload)).encode()).hexdigest()
+        except (TypeError, ValueError, RecursionError):
+            return False, f"noncanonical payload at receipt {i}"
+        if r.get("chain_hash") != digest:
             return False, f"payload tampered at receipt {i}"
         prev = r["chain_hash"]
     return True, prev
 
+def _validate_tolerance(rel_tol):
+    if isinstance(rel_tol, bool) or not isinstance(rel_tol, (int, float)):
+        raise ValueError("relative tolerance must be a finite nonnegative number")
+    try:
+        tolerance = float(rel_tol)
+    except (ValueError, OverflowError):
+        raise ValueError("relative tolerance must be a finite nonnegative number") from None
+    if not math.isfinite(tolerance) or tolerance < 0:
+        raise ValueError("relative tolerance must be a finite nonnegative number")
+    return tolerance
+
+
 def crosscheck(chain_a, chain_b, rel_tol=0.01):
+    rel_tol = _validate_tolerance(rel_tol)
     ok_a, da = verify_chain(chain_a)
     ok_b, db = verify_chain(chain_b)
     if not ok_a:
@@ -43,21 +64,61 @@ def crosscheck(chain_a, chain_b, rel_tol=0.01):
     def lanes(chain):
         out = {}
         for r in chain:
-            for res in (r.get("results") or []):
-                if isinstance(res, dict) and res.get("runs") and isinstance(res.get("metrics"), dict):
-                    lane = str(res.get("engine") or res.get("lane") or "run")
-                    out[lane] = {k: float(v) for k, v in res["metrics"].items() if isinstance(v, (int, float))}
+            results = r.get("results")
+            if results is None:
+                continue
+            if not isinstance(results, list):
+                raise ValueError("results must be a list")
+            for res in results:
+                if not isinstance(res, dict):
+                    raise ValueError("result must be an object")
+                runs = res.get("runs")
+                if runs is None:
+                    continue
+                if not isinstance(runs, list):
+                    raise ValueError("runs must be a list")
+                if not runs:
+                    continue
+                metrics = res.get("metrics")
+                if metrics is None:
+                    continue
+                if not isinstance(metrics, dict):
+                    raise ValueError("metrics must be an object")
+                numeric = {}
+                for key, value in metrics.items():
+                    if isinstance(value, bool) or not isinstance(value, (int, float)):
+                        continue
+                    try:
+                        number = float(value)
+                    except (ValueError, OverflowError):
+                        raise ValueError("metric cannot be represented as a finite float") from None
+                    if not math.isfinite(number):
+                        raise ValueError("metric must be finite")
+                    numeric[key] = number
+                lane = str(res.get("engine") or res.get("lane") or "run")
+                out[lane] = numeric
         return out
-    la, lb = lanes(chain_a), lanes(chain_b)
+    try:
+        la = lanes(chain_a)
+    except ValueError as exc:
+        return {"verdict": "INVALID", "reason": f"chain A: {exc}"}
+    try:
+        lb = lanes(chain_b)
+    except ValueError as exc:
+        return {"verdict": "INVALID", "reason": f"chain B: {exc}"}
     if not (set(la) & set(lb)):
         return {"verdict": "INCOMPARABLE"}
     overall = "CONSISTENT"
+    compared = 0
     for lane in sorted(set(la) & set(lb)):
         for k in set(la[lane]) & set(lb[lane]):
-            d = abs(la[lane][k] - lb[lane][k]) / max(abs(la[lane][k]), abs(lb[lane][k]), 1e-12)
+            compared += 1
+            a, b = la[lane][k], lb[lane][k]
+            scale = max(abs(a), abs(b), 1e-12)
+            d = abs(a / scale - b / scale)
             if d > rel_tol:
                 overall = "DIVERGENT"
-    return {"verdict": overall}
+    return {"verdict": overall if compared else "INCOMPARABLE"}
 
 # ---- golden chain ----
 
@@ -148,6 +209,8 @@ def eclipse_run(verify_fn: Callable = None, cross_fn: Callable = None, rel_tol: 
     Callback exceptions and malformed results are errors, not evidence that a
     mutation was detected. The native plane harness follows the same rule.
     """
+    # Invalid caller configuration remains ValueError, before any callback.
+    _validate_tolerance(rel_tol)
     verifier = verify_chain if verify_fn is None else verify_fn
     comparator = crosscheck if cross_fn is None else cross_fn
     phase = "baseline"

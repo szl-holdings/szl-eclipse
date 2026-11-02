@@ -51,6 +51,18 @@ chain — that is the receipt design working, not the verifier being clever.
 Within-tolerance drift (`ALLOW-ONLY-WITHIN-TOLERANCE`) only applies to
 honestly re-hashed chains, and the report says so per row.
 
+The in-memory reference verifier rejects malformed chain containers, receipt
+objects, and noncanonical payloads with an invalid decision. Its comparator
+requires at least one shared numeric metric before reporting consistency;
+matching lane names alone are not evidence of a comparison. Comparison still
+uses shared metrics rather than imposing an identical-metric-schema policy.
+Malformed result containers and numeric metrics that cannot be represented as
+finite floats are invalid. Missing measurements and nonnumeric metric values
+(including booleans) do not count as comparisons. The relative tolerance must
+be a nonnegative number representable as a finite float; invalid caller
+tolerances raise `ValueError`. Relative differences are scaled before
+subtraction so extreme finite metrics cannot overflow the comparison.
+
 ## Usage
 
 ```bash
