@@ -160,13 +160,10 @@ MUTATIONS = [
     ("duplicate_lane", _m_duplicate_lane, "CATCH"),
 ]
 
-def eclipse_run(verify_fn: Callable = None, cross_fn: Callable = None, rel_tol: float = 0.01) -> Dict[str, Any]:
+def _eclipse_run(verify_fn: Callable, cross_fn: Callable, rel_tol: float) -> Dict[str, Any]:
     """Attack the verifier under test with every mutation class; measure sensitivity.
     verify_fn(chain) -> (ok, detail); cross_fn(reference, mutated, rel_tol) -> {'verdict': ...}.
-    Defaults are the reference implementations above."""
-    _validate_tolerance(rel_tol)
-    verify_fn = verify_fn or verify_chain
-    cross_fn = cross_fn or crosscheck
+    Callbacks are contract-checked by the public entrypoint."""
     golden = golden_chain()
     reference = golden_chain()
     baseline_ok, baseline_detail = verify_fn(copy.deepcopy(golden))
@@ -204,6 +201,49 @@ def eclipse_run(verify_fn: Callable = None, cross_fn: Callable = None, rel_tol: 
     report["baseline"] = {"chain_valid": baseline_ok, "crosscheck": baseline_cross}
     report["receipt"] = hashlib.sha256(canonical(report).encode()).hexdigest()
     return report
+
+
+def eclipse_run(verify_fn: Callable = None, cross_fn: Callable = None, rel_tol: float = 0.01) -> Dict[str, Any]:
+    """Measure sensitivity only when both callbacks satisfy their contracts.
+
+    Callback exceptions and malformed results are errors, not evidence that a
+    mutation was detected. The native plane harness follows the same rule.
+    """
+    # Invalid caller configuration remains ValueError, before any callback.
+    _validate_tolerance(rel_tol)
+    verifier = verify_chain if verify_fn is None else verify_fn
+    comparator = crosscheck if cross_fn is None else cross_fn
+    phase = "baseline"
+
+    def checked_verify(chain):
+        nonlocal phase
+        phase = "verify"
+        result = verifier(chain)
+        if (not isinstance(result, (tuple, list)) or len(result) != 2
+                or type(result[0]) is not bool):
+            raise ValueError("verifier must return (bool, detail)")
+        return result
+
+    def checked_cross(reference, mutated, tolerance):
+        nonlocal phase
+        phase = "crosscheck"
+        result = comparator(reference, mutated, tolerance)
+        if (not isinstance(result, dict) or not isinstance(result.get("verdict"), str)
+                or result["verdict"] not in {"CONSISTENT", "DIVERGENT", "INVALID", "INCOMPARABLE"}):
+            raise ValueError("comparator must return a recognized verdict")
+        # The baseline result is included in the report and its receipt.
+        # Refuse non-JSON evidence before counting any mutation as detected.
+        canonical(result)
+        return result
+
+    try:
+        return _eclipse_run(checked_verify, checked_cross, rel_tol)
+    except Exception as error:
+        report = {"state": "ERROR", "sensitivity": None,
+                  "reason": "verifier/comparator failed or returned malformed evidence",
+                  "phase": phase, "error_type": type(error).__name__}
+        report["receipt"] = hashlib.sha256(canonical(report).encode()).hexdigest()
+        return report
 
 if __name__ == "__main__":
     rep = eclipse_run()
