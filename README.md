@@ -96,3 +96,5 @@ without retaining callback exception messages.
 ## License
 
 Apache-2.0 — canonical org text (see LICENSE pointer).
+
+Estate on Hugging Face: models, datasets and Spaces are published under the [SZLHOLDINGS](https://huggingface.co/SZLHOLDINGS) org.
