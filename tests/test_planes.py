@@ -1,6 +1,8 @@
 import hashlib
 import json
 
+import pytest
+
 from szl_eclipse.eclipse import canonical, eclipse_run
 from szl_eclipse.planes import (
     file_verifier_adapter,
@@ -69,6 +71,37 @@ def test_adapter_requires_exact_measured_path_set_for_acceptance():
     assert accepted is False
     assert detail["measured_count"] == len(chain) - 1
     assert detail["measured_paths_match"] is False
+
+
+@pytest.mark.parametrize("mutation", ["drop", "clear", "replace"])
+def test_adapter_binds_coverage_before_callback_mutates_inputs(mutation):
+    def mutate_paths(paths):
+        if mutation == "drop":
+            paths.pop()
+        elif mutation == "clear":
+            paths.clear()
+        else:
+            paths[:] = ["unrelated-a.json", "unrelated-b.json", "unrelated-c.json"]
+        return [], paths
+
+    accepted, detail = file_verifier_adapter(mutate_paths)(plane_golden_chain())
+    assert accepted is False
+    assert detail["measured_paths_match"] is False
+    report = plane_run(mutate_paths, {})
+    assert report["state"] == "INVALID-BASELINE"
+    assert report["sensitivity"] is None
+    assert report["mutations"] == []
+
+
+def test_adapter_allows_callback_reordering_all_original_inputs():
+    def reverse_paths(paths):
+        paths.reverse()
+        return [], paths
+
+    accepted, detail = file_verifier_adapter(reverse_paths)(plane_golden_chain())
+    assert accepted is True
+    assert detail["measured_paths_match"] is True
+    assert detail["measured_count"] == 3
 
 
 def test_report_hash_binds_source_and_every_row():
