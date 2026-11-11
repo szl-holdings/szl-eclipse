@@ -39,10 +39,10 @@ def file_verifier_adapter(verify_paths):
                 path = Path(directory) / f"{index:03}.json"
                 path.write_text(canonical(receipt), encoding="utf-8")
                 paths.append(str(path))
+            expected_paths = [Path(path).resolve() for path in paths]
             errors, measured = verify_paths(paths)
             if not isinstance(errors, list) or not isinstance(measured, list):
                 raise ValueError("native verifier returned the wrong contract")
-            expected_paths = [Path(path).resolve() for path in paths]
             try:
                 actual_paths = [Path(path).resolve() for path in measured]
                 measured_paths_match = (len(actual_paths) == len(expected_paths)
