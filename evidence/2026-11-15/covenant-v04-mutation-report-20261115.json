@@ -1,0 +1,275 @@
+{
+  "crosscheck_leg": {
+    "agreement": "exact digest agreement; rel_tol not applicable to bundle agreement",
+    "harness_a": "khipu_consensus.sth.merkle_root + ReceiptTree (production v0.4)",
+    "harness_b": "independent index-recursive reference in this adapter",
+    "note": "DIVERGENT is a crosscheck alarm and must never occur; INVALID locates tamper"
+  },
+  "directed_battery": {
+    "attacks_caught": 14,
+    "attacks_total": 14,
+    "controls_ok": true,
+    "rows": [
+      {
+        "caught": true,
+        "expected": "TAMPERED",
+        "kind": "attack",
+        "located": "root mismatch with expected root (located)",
+        "mutation": "sth_root_tamper",
+        "observed": "TAMPERED",
+        "surface": "verify_sth_receipt"
+      },
+      {
+        "caught": true,
+        "expected": "TAMPERED",
+        "kind": "attack",
+        "located": "invalid signature at witness sentra",
+        "mutation": "witness_signature_flip",
+        "observed": "TAMPERED",
+        "surface": "verify_sth_receipt"
+      },
+      {
+        "caught": true,
+        "expected": "UNKNOWN",
+        "kind": "attack",
+        "located": "insufficient quorum: 2-of-4 below threshold 3 (fail-closed deny)",
+        "mutation": "quorum_strip_2_of_4",
+        "observed": "UNKNOWN",
+        "surface": "verify_sth_receipt"
+      },
+      {
+        "caught": true,
+        "expected": "TAMPERED",
+        "kind": "attack",
+        "located": "sth-binding-mismatch at witness a11oy",
+        "mutation": "binding_session_swap",
+        "observed": "TAMPERED",
+        "surface": "verify_sth_receipt"
+      },
+      {
+        "caught": true,
+        "expected": "TAMPERED",
+        "kind": "attack",
+        "located": "tree size mismatch with expected size (located)",
+        "mutation": "tree_size_drift",
+        "observed": "TAMPERED",
+        "surface": "verify_sth_receipt"
+      },
+      {
+        "caught": true,
+        "expected": "UNKNOWN",
+        "kind": "attack",
+        "located": "insufficient quorum: 0-of-4 below threshold 3 (fail-closed deny)",
+        "mutation": "trusted_key_swap",
+        "observed": "UNKNOWN",
+        "surface": "verify_sth_receipt"
+      },
+      {
+        "caught": true,
+        "expected": "NO-INFLATION",
+        "kind": "attack",
+        "located": "3-of-4 distinct witnesses countersigned; consensus_count=3",
+        "mutation": "duplicate_witness_inflate",
+        "observed": "NO-INFLATION",
+        "surface": "distinct-witness rule"
+      },
+      {
+        "caught": true,
+        "expected": "REJECTED",
+        "kind": "attack",
+        "located": "swapped sibling nodes at depth 0/1",
+        "mutation": "proof_node_swap",
+        "observed": "REJECTED",
+        "surface": "verify_inclusion"
+      },
+      {
+        "caught": true,
+        "expected": "REJECTED",
+        "kind": "attack",
+        "located": "orientation flag flipped at depth 0",
+        "mutation": "proof_orientation_flip",
+        "observed": "REJECTED",
+        "surface": "verify_inclusion"
+      },
+      {
+        "caught": true,
+        "expected": "REJECTED",
+        "kind": "attack",
+        "located": "proof truncated by one node",
+        "mutation": "proof_truncate",
+        "observed": "REJECTED",
+        "surface": "verify_inclusion"
+      },
+      {
+        "caught": true,
+        "expected": "REJECTED",
+        "kind": "attack",
+        "located": "proof for index 1 claimed under index 2 (orientation binding)",
+        "mutation": "index_shift",
+        "observed": "REJECTED",
+        "surface": "verify_inclusion"
+      },
+      {
+        "caught": true,
+        "expected": "DENY",
+        "kind": "attack",
+        "located": "located: tree root mismatch with recomputed root",
+        "mutation": "leaf_digest_tamper",
+        "observed": "DENY",
+        "surface": "recall_gate"
+      },
+      {
+        "caught": true,
+        "expected": "DENY",
+        "kind": "attack",
+        "located": "no countersigned STH (fail-closed deny)",
+        "mutation": "missing_sth_receipt",
+        "observed": "DENY",
+        "surface": "recall_gate (spec 1.3 hard rule)"
+      },
+      {
+        "caught": true,
+        "expected": "DENY",
+        "kind": "attack",
+        "located": "target index out of range (no evidence)",
+        "mutation": "empty_tree_no_evidence",
+        "observed": "DENY",
+        "surface": "recall_gate"
+      },
+      {
+        "caught": true,
+        "expected": "PASS",
+        "kind": "control",
+        "located": "verify_inclusion=True; recall=RELEASE; recall covered by 3-of-4 witness-countersigned tree head",
+        "mutation": "golden_positive_control",
+        "observed": "PASS",
+        "surface": "verify_inclusion+recall_gate"
+      }
+    ]
+  },
+  "eclipse_run": {
+    "baseline": {
+      "chain_valid": true,
+      "crosscheck": {
+        "reason": "harness A and harness B agree; root matches sealed STH: 761d0dcd5500",
+        "verdict": "CONSISTENT"
+      }
+    },
+    "blind_spots": [],
+    "label": "mutation harness for receipt verifiers - who verifies the verifier",
+    "mutations": [
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "metric_tamper"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "reorder"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "prevhash_swap"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "terminal_truncate"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "lane_rename"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "key_rename"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "ALLOW-ONLY-WITHIN-TOLERANCE",
+        "mutation": "precision_drift",
+        "note": "drift without rehash breaks the chain; ALLOW applies only to honestly re-hashed chains"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "type_confusion"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "empty"
+      },
+      {
+        "caught": true,
+        "chain_valid": false,
+        "crosscheck": "INVALID",
+        "expectation": "CATCH",
+        "mutation": "duplicate_lane"
+      }
+    ],
+    "receipt": "eefa1ddf62acc29767bff651bf64bea26a6f49782950c47ed7504aef744224f7",
+    "rel_tol": 0.01,
+    "sensitivity": "10/10",
+    "state": "VERIFIED-SENSITIVE"
+  },
+  "honesty": {
+    "fail_closed": "UNKNOWN never PASS; DENY is the default",
+    "read_only": "adjudication proves facts about a bundle; never lifts a deny, never authorizes (spec 4)",
+    "scope": "LOCAL_FIXTURE_VERIFIER_CONTROLS - the composed v0.4 recall adjudication path on a deterministic golden bundle; not retrieval, model-accuracy, or production-performance measurement",
+    "witness_keys": "ephemeral in-process ECDSA-P256 test keys; estate-operated witnesses; multi-party-witnessed, never trustless"
+  },
+  "overall": "VERIFIED-SENSITIVE",
+  "pinning": {
+    "adapter_sha256": "ee88ea8e0b2b74674f199b7142128897c13ea3bb75d4055b3a8977d2d246eb6e",
+    "device_label": "BETTERWITHAGE (owner-authorized device; parallel lanes untouched)",
+    "generated_at_utc": "2026-11-15T22:56:50.553485+00:00",
+    "khipu_branch": "feat/v0.4-receipt-tree-gate",
+    "khipu_commit": "a07aa20759cd4f45f772926b3e67377b0d703858",
+    "khipu_prs": {
+      "step1_sth": 66,
+      "step2_receipt_tree": 67
+    },
+    "khipu_receipt_tree_sha256": "0b04a1568969b77055c0b2d1dbbccc124db086c8191eac0c32c7b48bcd6be6d8",
+    "khipu_sth_sha256": "ac9e88e3a3ae2a4701233a84d47190288584b04e610f1af8bccff8edd916a7cc",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.10",
+    "szl_eclipse_commit": "c550abe8e525d507733cf3e2498e3adc8968e98e",
+    "szl_eclipse_version": "0.2.2"
+  },
+  "receipt": "0b2b977f192c1c0bc8d6706916a6dbfdac73d5bd08c2a5c86cd9cb74a9dc0df8",
+  "schema": "szl.eclipse.covenant-v04-mutation-report/v1",
+  "spec": {
+    "file_sha256_git": "47305ea775066c80bd71061e852f4f401f729e13",
+    "path": "docs/COVENANT_V0_4_COUNTERSIGN_SPEC_2026-11-15.md",
+    "repo": "szl-holdings/szl-frontier",
+    "sections": [
+      "3.1 ten attack classes",
+      "3.2 crosscheck leg",
+      "3.3 report pinned to commits"
+    ],
+    "step": "v0.4 step 3 (szl-eclipse mutation report + szl-crosscheck leg)"
+  }
+}
