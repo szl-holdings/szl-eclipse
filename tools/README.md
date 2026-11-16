@@ -53,3 +53,12 @@ This is a scoped local battery, not exhaustive verification of all Khipu behavio
 PASS does not authorize execution, lift a hard deny, prove tenant policy, establish independent witness operators, attest remote deployments, or prove append-only log continuity. Production readiness remains false in the report. Draft Khipu changes are not included unless explicitly selected by their actual commit.
 
 Run `python -m pytest tests -q` for the package and evidence-regression tests. If a Windows machine has an inaccessible shared pytest temporary-directory link, use `--basetemp=.pytest_cache/covenant-v2-tmp` within this worktree. Full cross-repository evidence is generated separately using the explicit source arguments above.
+
+
+## Native CI
+
+The separate `Covenant v2 source-pinned evidence` workflow runs on pull requests and manual dispatch only, on Ubuntu 24.04 with Python 3.12. It checks out three sibling worktrees, pins Eclipse to the workflow's exact `github.sha`, Khipu to `a5ccc9574dd921dd001bcf4ddd8eef785ccab11c`, and Crosscheck to `ec7443a5cda273e2fd4728448d9dad37695eec60`. The Crosscheck pin is the separately reviewed candidate [PR32](https://github.com/szl-holdings/szl-crosscheck/pull/32); it is not labelled as main. Updating either dependency requires an explicit reviewed pin change.
+
+The job uses the same immutable checkout, setup-python, and upload-artifact action pins already used by this repository. Test dependencies are installed only in the CI environment (pytest 9.2.0 and cryptography 50.0.2). It exercises the real source loader and all three implementations, preserves an output artifact even when the battery fails, and treats a missing artifact as an error. The workflow uses read-only repository permissions and no supplied secrets, signing keys, deployment access, or schedule.
+
+Saved evidence acceptance independently recomputes mutation detection from typed verifier/comparator observations and requires the exact seven-flag claim boundary with every value false. A self-consistent digest cannot excuse contradictory detection claims, missing observations, or broader authorization/readiness claims.

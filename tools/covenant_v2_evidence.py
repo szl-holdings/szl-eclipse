@@ -20,6 +20,12 @@ from pathlib import Path
 
 SCHEMA = "szl.covenant-v2-evidence/v2"
 SCOPE = "synthetic local STH v2 verification and exact chain/Merkle crosscheck"
+CLAIM_BOUNDARY = {
+    "production_ready": False, "execution_authorized": False,
+    "policy_authorized": False, "operator_independence_verified": False,
+    "append_only_continuity_verified": False,
+    "crosscheck_signature_verification": False, "report_authentication": False,
+}
 SESSION = "covenant-v2-evidence-fixture"
 FIXTURE_TS = "2026-11-16T00:00:00Z"
 FIXTURE_NOW = datetime(2026, 11, 16, 0, 0, 1, tzinfo=timezone.utc)
@@ -193,6 +199,10 @@ def evidence_usable(report, *, expected_commits, now, max_age_seconds=86400):
             return False
         if set(report["provenance"]) != set(expected_commits):
             return False
+        boundary = report["claim_boundary"]
+        if (type(boundary) is not dict or set(boundary) != set(CLAIM_BOUNDARY)
+                or any(value is not False for value in boundary.values())):
+            return False
         for name, expected in expected_commits.items():
             entry = report["provenance"][name]
             if (_HEX40.fullmatch(expected) is None or entry["commit"] != expected
@@ -210,6 +220,18 @@ def evidence_usable(report, *, expected_commits, now, max_age_seconds=86400):
         return False
 
 
+def mutation_detected(row):
+    """Derive detection from typed observations; never trust a caught claim."""
+    if type(row) is not dict or type(row.get("chain_valid")) is not bool:
+        return False
+    verdict = row.get("crosscheck")
+    rejected = {"INVALID", "INCOMPARABLE", "DIVERGENT"}
+    if type(verdict) is not str or verdict not in rejected | {"CONSISTENT"}:
+        return False
+    observed_detection = row["chain_valid"] is False or verdict in rejected
+    return observed_detection and row.get("caught") is observed_detection
+
+
 def battery_passed(battery):
     try:
         controls = battery["controls"]
@@ -225,7 +247,7 @@ def battery_passed(battery):
             and battery["eclipse"]["sensitivity"] == "10/10"
             and len(battery["eclipse"]["mutations"]) == len(MUTATION_NAMES)
             and {row["mutation"] for row in battery["eclipse"]["mutations"]} == MUTATION_NAMES
-            and all(row["caught"] is True for row in battery["eclipse"]["mutations"])
+            and all(mutation_detected(row) for row in battery["eclipse"]["mutations"])
             and battery["eclipse"]["blind_spots"] == []
         )
     except (KeyError, TypeError):
@@ -470,13 +492,7 @@ def execute(args):
         "runtime": {"python": platform.python_version(), "cryptography": cryptography.__version__,
                     "platform": platform.system(),
                     "external_dependencies": "versions recorded; not independently source-pinned"},
-        "claim_boundary": {
-            "production_ready": False, "execution_authorized": False,
-            "policy_authorized": False, "operator_independence_verified": False,
-            "append_only_continuity_verified": False,
-            "crosscheck_signature_verification": False,
-            "report_authentication": False,
-        },
+        "claim_boundary": dict(CLAIM_BOUNDARY),
     }
     report["report_sha256"] = report_digest(report)
     expected = {name: commit for name, (_, commit, _) in repos.items()}

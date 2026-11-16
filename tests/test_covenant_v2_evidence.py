@@ -160,7 +160,8 @@ def passing_battery():
         "eclipse": {
             "state": "VERIFIED-SENSITIVE", "sensitivity": "10/10",
             "baseline": {"chain_valid": True, "crosscheck": {"verdict": "CONSISTENT"}},
-            "mutations": [{"mutation": name, "caught": True}
+            "mutations": [{"mutation": name, "caught": True,
+                           "chain_valid": False, "crosscheck": "INVALID"}
                           for name in sorted(evidence.MUTATION_NAMES)], "blind_spots": [],
         },
     }
@@ -173,6 +174,7 @@ def saved_report():
         "schema": evidence.SCHEMA, "scope": evidence.SCOPE, "state": "PASS",
         "generated_utc": evidence.FIXTURE_NOW.isoformat(),
         "battery": passing_battery(),
+        "claim_boundary": dict(evidence.CLAIM_BOUNDARY),
         "provenance": {
             name: {"commit": commit, "worktree_clean": True, "worktree_root_verified": True,
                    "sources": {"fixture.py": {"sha256": "a" * 64, "git_blob_sha256": "b" * 64,
@@ -350,3 +352,62 @@ def test_wrong_or_dirty_checkout_rejected_before_package_code_runs(committed_sou
     })
     with pytest.raises(evidence.ProvenanceError, match="expected commit|not clean"):
         evidence.execute(args)
+
+
+@pytest.mark.parametrize("name", sorted(evidence.MUTATION_NAMES))
+def test_caught_claim_cannot_override_undetected_mutation(name):
+    report, commits = saved_report()
+    row = next(row for row in report["battery"]["eclipse"]["mutations"]
+               if row["mutation"] == name)
+    row.update(chain_valid=True, crosscheck="CONSISTENT", caught=True)
+    report["report_sha256"] = evidence.report_digest(report)
+    assert not evidence.battery_passed(report["battery"])
+    assert not usable(report, commits)
+
+
+@pytest.mark.parametrize("mutation", [
+    "missing_chain", "missing_crosscheck", "boolean_alias", "unknown_verdict",
+    "missing_caught", "caught_string", "contradictory_caught",
+])
+def test_mutation_observations_are_required_and_typed(mutation):
+    report, commits = saved_report()
+    row = report["battery"]["eclipse"]["mutations"][0]
+    if mutation == "missing_chain":
+        del row["chain_valid"]
+    elif mutation == "missing_crosscheck":
+        del row["crosscheck"]
+    elif mutation == "boolean_alias":
+        row["chain_valid"] = 0
+    elif mutation == "unknown_verdict":
+        row["crosscheck"] = "UNKNOWN"
+    elif mutation == "missing_caught":
+        del row["caught"]
+    elif mutation == "caught_string":
+        row["caught"] = "true"
+    else:
+        row["caught"] = False
+    report["report_sha256"] = evidence.report_digest(report)
+    assert not usable(report, commits)
+
+
+@pytest.mark.parametrize("name", sorted(evidence.CLAIM_BOUNDARY))
+def test_every_claim_boundary_is_required_exactly_false(name):
+    for mutation in ("missing", "true", "boolean_alias"):
+        report, commits = saved_report()
+        if mutation == "missing":
+            del report["claim_boundary"][name]
+        else:
+            report["claim_boundary"][name] = True if mutation == "true" else 0
+        report["report_sha256"] = evidence.report_digest(report)
+        assert not usable(report, commits), (name, mutation)
+
+
+def test_missing_or_additional_claim_boundary_rejected():
+    for mutation in ("missing", "additional"):
+        report, commits = saved_report()
+        if mutation == "missing":
+            del report["claim_boundary"]
+        else:
+            report["claim_boundary"]["new_claim"] = False
+        report["report_sha256"] = evidence.report_digest(report)
+        assert not usable(report, commits)
