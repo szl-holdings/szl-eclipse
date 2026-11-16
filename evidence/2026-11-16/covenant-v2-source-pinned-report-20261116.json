@@ -1,0 +1,537 @@
+{
+  "battery": {
+    "controls": [
+      {
+        "expected": true,
+        "name": "valid_sth",
+        "observed": true,
+        "state": "PASS"
+      },
+      {
+        "expected": true,
+        "name": "valid_recall",
+        "observed": true,
+        "state": "PASS"
+      },
+      {
+        "expected": true,
+        "name": "three_of_four",
+        "observed": true,
+        "state": "PASS"
+      },
+      {
+        "expected": true,
+        "name": "age_inside_ttl",
+        "observed": true,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "hard_deny",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "missing_policy",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "boolean_policy_alias",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "omitted_policy_context",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "missing_time",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "naive_time",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "missing_ttl",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "invalid_ttl_bool",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "invalid_ttl_zero",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "ttl_boundary",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "future_timestamp",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "timestamp_edit",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "root_edit",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "session_edit",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "size_edit",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "schema_downgrade",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "signature_flip",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "quorum_strip",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "duplicate_signature",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "duplicate_trusted_key",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "wrong_trusted_pool",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "signed_dissent",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "missing_receipt",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "empty_tree",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "tree_leaf_edit",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "wrong_target",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "wrong_index_bool",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": true,
+        "name": "proof_positive",
+        "observed": true,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "proof_node_edit",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "proof_orientation_edit",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "proof_truncate",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "proof_wrong_index",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": true,
+        "name": "independent_roots",
+        "observed": true,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "changed_reference",
+        "observed": false,
+        "state": "PASS"
+      },
+      {
+        "expected": false,
+        "name": "rehashed_candidate",
+        "observed": false,
+        "state": "PASS"
+      }
+    ],
+    "eclipse": {
+      "baseline": {
+        "chain_valid": true,
+        "crosscheck": {
+          "candidate": {
+            "chain_sha256": "bfb40a4fa5eb8174714efe4d4f17ae5035f81cd1d94720beea2fa2ea53f3be86",
+            "root": "761d0dcd5500c8ef2b5550e89895868a21b3977a8dfee6ed401b01a6e88e0597",
+            "terminal_hash": "52184ce7e9beae0cc6b8c248ca188768d5c0dc7fadc680490fcdefd2037f80f6",
+            "tree_size": 3
+          },
+          "execution_authorized": false,
+          "expected_root": "761d0dcd5500c8ef2b5550e89895868a21b3977a8dfee6ed401b01a6e88e0597",
+          "observed_root": "761d0dcd5500c8ef2b5550e89895868a21b3977a8dfee6ed401b01a6e88e0597",
+          "reason": "exact agreement",
+          "reference": {
+            "chain_sha256": "bfb40a4fa5eb8174714efe4d4f17ae5035f81cd1d94720beea2fa2ea53f3be86",
+            "root": "761d0dcd5500c8ef2b5550e89895868a21b3977a8dfee6ed401b01a6e88e0597",
+            "terminal_hash": "52184ce7e9beae0cc6b8c248ca188768d5c0dc7fadc680490fcdefd2037f80f6",
+            "tree_size": 3
+          },
+          "scope": "exact receipt-chain and RFC6962 Merkle agreement only",
+          "verdict": "CONSISTENT"
+        }
+      },
+      "blind_spots": [],
+      "label": "mutation harness for receipt verifiers - who verifies the verifier",
+      "mutations": [
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "metric_tamper"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "reorder"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "prevhash_swap"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "terminal_truncate"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "lane_rename"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "key_rename"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "ALLOW-ONLY-WITHIN-TOLERANCE",
+          "mutation": "precision_drift",
+          "note": "drift without rehash breaks the chain; ALLOW applies only to honestly re-hashed chains"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "type_confusion"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "empty"
+        },
+        {
+          "caught": true,
+          "chain_valid": false,
+          "crosscheck": "INVALID",
+          "expectation": "CATCH",
+          "mutation": "duplicate_lane"
+        }
+      ],
+      "receipt": "8197ca75a125a9eb900e6b71b639dbf3e5844ad018149f1f887d7253bcabd0c4",
+      "rel_tol": 0,
+      "sensitivity": "10/10",
+      "state": "VERIFIED-SENSITIVE"
+    },
+    "fixture": {
+      "hard_deny": false,
+      "keys": "ephemeral synthetic in-memory P256",
+      "max_age_seconds": 300,
+      "merkle_vector_sizes": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        127,
+        128,
+        129,
+        255,
+        256,
+        257,
+        4096
+      ],
+      "operators": "one local test process; no operator independence claimed",
+      "session_id": "covenant-v2-evidence-fixture",
+      "timestamp": "2026-11-16T00:00:00Z",
+      "trusted_now": "2026-11-16T00:00:01+00:00"
+    }
+  },
+  "claim_boundary": {
+    "append_only_continuity_verified": false,
+    "crosscheck_signature_verification": false,
+    "execution_authorized": false,
+    "operator_independence_verified": false,
+    "policy_authorized": false,
+    "production_ready": false,
+    "report_authentication": false
+  },
+  "generated_utc": "2026-11-16T23:24:23.862863+00:00",
+  "provenance": {
+    "crosscheck": {
+      "commit": "ec7443a5cda273e2fd4728448d9dad37695eec60",
+      "sources": {
+        "src/szl_crosscheck/__init__.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "e6f0cdf55f6bcb6f570ddaeea378c3039dee25084797896559f2ec9d20a479ef",
+          "sha256": "34824490ff975d13b03fecab7aa4b9b95b93c0d83779d87410aecd813e09b96e",
+          "source_path": "src/szl_crosscheck/__init__.py"
+        },
+        "src/szl_crosscheck/covenant.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "4605221c35b3b3acd478d090f24f23c465c5921f6ca5dd9a53599dab8db72379",
+          "sha256": "4605221c35b3b3acd478d090f24f23c465c5921f6ca5dd9a53599dab8db72379",
+          "source_path": "src/szl_crosscheck/covenant.py"
+        },
+        "src/szl_crosscheck/crosscheck.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "e53ac42b3c9eecbcac4bbf39ca6e00f708f930dbc25406f63c0333fdc9c24028",
+          "sha256": "c9cb25265657477eefca9012691ac8d65df01f02951fd26c02b4f9f5042b6c38",
+          "source_path": "src/szl_crosscheck/crosscheck.py"
+        },
+        "src/szl_crosscheck/lean_build.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "21c41d3fdb142099558a315cc7d4b3fdbdf4e8cf4e73c94cabbf01f44b4884e9",
+          "sha256": "6ab06c6738c25ecde8e0f166adc102c02a2237e068dd7cf399b54c7e77e08c7b",
+          "source_path": "src/szl_crosscheck/lean_build.py"
+        }
+      },
+      "worktree_clean": true,
+      "worktree_root_verified": true
+    },
+    "eclipse": {
+      "commit": "4ef0c70c4ee2e49185e240b070338fe67a9463ac",
+      "sources": {
+        "src/szl_eclipse/__init__.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "8cb63f54e65397974393ec4be9738c2d8540f8cdb62463c18d965b71220c8fcd",
+          "sha256": "602c8ebe5e36134c24699e0018e22674b343ebbe1089b38b9b7119c741c6bbb6",
+          "source_path": "src/szl_eclipse/__init__.py"
+        },
+        "src/szl_eclipse/eclipse.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "0c41c0eb884416e32ca35bff5fcd830d51f70e20e0bd7aa41d167ead34817828",
+          "sha256": "4d35b99ebee636c844aa32b3e7f56167341daf6f45979c7d43391865c42d1639",
+          "source_path": "src/szl_eclipse/eclipse.py"
+        },
+        "tools/covenant_v2_evidence.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "37e3d76d9f6bfd5b08d66a8af665ec84ce49271d4a37d40c7df8ac2a6d755caa",
+          "sha256": "37e3d76d9f6bfd5b08d66a8af665ec84ce49271d4a37d40c7df8ac2a6d755caa",
+          "source_path": "tools/covenant_v2_evidence.py"
+        }
+      },
+      "worktree_clean": true,
+      "worktree_root_verified": true
+    },
+    "khipu": {
+      "commit": "a5ccc9574dd921dd001bcf4ddd8eef785ccab11c",
+      "sources": {
+        "python/khipu_consensus/__init__.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "5891017b9f35298bb5ba360fb08145db0d1496760bb2304f6932498c6cfafbdd",
+          "sha256": "125404a130a90c7fe16d85a4ad9facd559824e39d0748c6ffe35941f7d96c1ac",
+          "source_path": "python/khipu_consensus/__init__.py"
+        },
+        "python/khipu_consensus/receipt_tree.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "de8d06f40fa3cd0ec3b8e8bbd9e57beeba806253c752e56b84f349105d0bcc12",
+          "sha256": "de8d06f40fa3cd0ec3b8e8bbd9e57beeba806253c752e56b84f349105d0bcc12",
+          "source_path": "python/khipu_consensus/receipt_tree.py"
+        },
+        "python/khipu_consensus/sth.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "72d643f79cada6af6bcd9e0d21044d0a6cf1799a2be5189572e23404e55e8885",
+          "sha256": "72d643f79cada6af6bcd9e0d21044d0a6cf1799a2be5189572e23404e55e8885",
+          "source_path": "python/khipu_consensus/sth.py"
+        },
+        "python/khipu_consensus/witness.py": {
+          "compiled_origin_verified": true,
+          "git_blob_sha256": "39e55d5c31b4494558dd27457faf1c0106dd7c96c99170b3d546d91522612955",
+          "sha256": "80d3b895e6f6e81a654ef968d1764d48e9cfa394377d054e59681773b262fb10",
+          "source_path": "python/khipu_consensus/witness.py"
+        }
+      },
+      "worktree_clean": true,
+      "worktree_root_verified": true
+    }
+  },
+  "report_sha256": "5109066a025589a032becb7d16015ced2be2d0558f476fb6690624215d7b0f17",
+  "runtime": {
+    "cryptography": "50.0.2",
+    "external_dependencies": "versions recorded; not independently source-pinned",
+    "platform": "Windows",
+    "python": "3.12.10"
+  },
+  "schema": "szl.covenant-v2-evidence/v2",
+  "scope": "synthetic local STH v2 verification and exact chain/Merkle crosscheck",
+  "state": "PASS"
+}
